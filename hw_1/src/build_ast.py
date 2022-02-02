@@ -32,11 +32,9 @@ class viz_walker(ast.NodeVisitor):
             color = 'lightyellow'
         elif node_name == 'Name':
             node_name = 'Variable'
-            # suf = 'Name: ' + unp[0]
             suf = f"`{unp[0]}`"
             color = 'lightgreen'
         elif node_name == 'Attribute':
-            # suf = 'Name: ' + unp[0].split('.')[1]
             suf = f"`{unp[0].split('.')[1]}`"
             color = 'lightgreen'
         elif node_name == 'Call':
