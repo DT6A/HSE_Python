@@ -29,14 +29,14 @@ if __name__ == '__main__':
         B = np.random.randint(0, 3, (3, 3))
         C = np.random.randint(0, 3, (3, 3))
         D = np.array(B)
-        if (hash(MyMatrix(A.tolist())) == hash(MyMatrix(C.tolist()))) and (A != C).any() and (B == D).all() and (
+        if (hash(HashableMatrix(A.tolist())) == hash(HashableMatrix(C.tolist()))) and (A != C).any() and (B == D).all() and (
                 A @ B != C @ D).any():
             break
 
-    mA = MyMatrix(A.tolist())
-    mB = MyMatrix(B.tolist())
-    mC = MyMatrix(C.tolist())
-    mD = MyMatrix(D.tolist())
+    mA = HashableMatrix(A.tolist())
+    mB = HashableMatrix(B.tolist())
+    mC = HashableMatrix(C.tolist())
+    mD = HashableMatrix(D.tolist())
 
     with open('artifacts/hard/A.txt', 'w') as f:
         f.write(str(mA))
@@ -49,6 +49,6 @@ if __name__ == '__main__':
     with open('artifacts/hard/AB.txt', 'w') as f:
         f.write(str(mA @ mB))
     with open('artifacts/hard/CD.txt', 'w') as f:
-        f.write(str(MyMatrix((C @ D).tolist())))
+        f.write(str(HashableMatrix((C @ D).tolist())))
     with open('artifacts/hard/hash.txt', 'w') as f:
         f.write(str(hash(mA @ mB)) + ' ' + str(hash(mC @ mD)))

@@ -8,10 +8,15 @@ def v_scalar_prod(v1, v2):
     return sum([v1[i] * v2[i] for i in range(len(v1))])
 
 
-class MyMatrix:
-    _mul_hashes = {}
+def v_scalar_prod(v1, v2):
+    return sum([v1[i] * v2[i] for i in range(len(v1))])
 
+
+class MyMatrix:
     def __init__(self, data):
+        if isinstance(data, MyMatrix):
+            self._data = list(data._data)
+            return
         if not isinstance(data, list) or not all(isinstance(r, list) for r in data):
             raise ValueError('Invalid data format')
         self.shape = (len(data), len(data[0]))
@@ -29,9 +34,9 @@ class MyMatrix:
         if not isinstance(other, MyMatrix):
             raise ValueError('Second argument is not a MyMatrix')
         if not matmul and self.shape != other.shape:
-            raise ValueError('Invalid matrix dimensions', self.shape, other.shape)
+            raise ValueError('Invalid matrix dimentions', self.shape, other.shape)
         if matmul and self.shape[1] != other.shape[0]:
-            raise ValueError('Invalid matrix dimensions', self.shape, other.shape)
+            raise ValueError('Invalid matrix dimentions', self.shape, other.shape)
 
     def __add__(self, other):
         self.check_correct_arg(other)
@@ -56,18 +61,16 @@ class MyMatrix:
     def __matmul__(self, other):
         self.check_correct_arg(other, matmul=True)
 
-        hs = (hash(self), hash(other))
+        result = []
+        for i in range(self.shape[0]):
+            r = []
+            for j in range(self.shape[1]):
+                r.append(v_scalar_prod(self._data[i], [other._data[k][j] for k in range(other.shape[0])]))
+            result.append(r)
+        return MyMatrix(result)
 
-        if hs not in self._mul_hashes:
-            result = []
-            for i in range(self.shape[0]):
-                r = []
-                for j in range(self.shape[1]):
-                    r.append(v_scalar_prod(self._data[i], [other._data[k][j] for k in range(other.shape[0])]))
-                result.append(r)
-            self._mul_hashes[hs] = MyMatrix(result)
-        return self._mul_hashes[hs]
 
+class HashableMixin:
     def __hash__(self):
         # Hash of the matrix is a xor of all elements' hashes
         result = None
@@ -78,6 +81,19 @@ class MyMatrix:
                 else:
                     result ^= hash(v)
         return result
+
+
+class HashableMatrix(MyMatrix, HashableMixin):
+    _mul_hashes = {}
+
+    def __matmul__(self, other):
+        self.check_correct_arg(other, matmul=True)
+
+        hs = (hash(self), hash(other))
+
+        if hs not in self._mul_hashes:
+            self._mul_hashes[hs] = HashableMatrix(super(HashableMatrix, self).__matmul__(other))
+        return self._mul_hashes[hs]
 
 
 class ExpandedMatrix:
