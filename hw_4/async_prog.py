@@ -57,6 +57,7 @@ def worker_writer(in_queue):
 
 
 if __name__ == '__main__':
+    # Easy
     with open('artifacts/easy.txt', 'w') as f:
         f.write('Threads: ')
         threads = []
@@ -82,6 +83,7 @@ if __name__ == '__main__':
 
     cpu_num = mp.cpu_count()
 
+    # Medium
     with open('artifacts/medium.txt', 'w') as f:
         for n_jobs in range(1, 2 * cpu_num + 1):
             threads = []
@@ -108,8 +110,7 @@ if __name__ == '__main__':
                 end = time.time()
             f.write(f'\tTime: {end - start} seconds\n\tResult: {integrate_res}\n')
 
-    print('HARD')
-
+    # Hard
     A_queue = mp.Queue()
     B_queue = mp.Queue()
     writer_queue = mp.Queue()
