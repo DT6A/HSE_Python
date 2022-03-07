@@ -8,7 +8,7 @@ import multiprocessing as mp
 from threading import Thread
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
-ARG = 20000
+ARG = 100000
 THREADS = 10
 
 
@@ -60,25 +60,25 @@ if __name__ == '__main__':
     # Easy
     with open('artifacts/easy.txt', 'w') as f:
         f.write('Threads: ')
-        threads = []
+        threads = [Thread(target=fib, args=(ARG,)) for _ in range(THREADS)]
         start = time.time()
-        with ThreadPoolExecutor(max_workers=THREADS) as executor:
-            for _ in range(THREADS):
-                threads.append(executor.submit(fib, ARG))
-            for t in concurrent.futures.as_completed(threads):
-                t.result()
-            end = time.time()
+
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        end = time.time()
         f.write(str(end - start) + ' seconds\n')
 
         f.write('Processes: ')
-        procs = []
+        procs = [mp.Process(target=fib, args=(ARG,)) for _ in range(THREADS)]
         start = time.time()
-        with ProcessPoolExecutor(max_workers=THREADS) as executor:
-            for _ in range(THREADS):
-                procs.append(executor.submit(fib, ARG))
-            for p in concurrent.futures.as_completed(procs):
-                p.result()
-            end = time.time()
+        for p in procs:
+            p.start()
+        for p in procs:
+            p.join()
+        end = time.time()
         f.write(str(end - start) + ' seconds\n')
 
     cpu_num = mp.cpu_count()
