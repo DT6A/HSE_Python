@@ -17,6 +17,7 @@ async def save_image(session, i, dir):
     img.save(f'{dir}/image_{i}.jpeg', 'JPEG')
     print(f'Finish {i}')
 
+
 async def main(n, dir):
     async with aiohttp.ClientSession() as session:
         await asyncio.gather(*(save_image(session, i, dir) for i in range(n)))
@@ -32,7 +33,6 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
     try:
-        loop.create_task(main(args.n, args.dir))
-        loop.run_forever()
+        loop.run_until_complete(main(args.n, args.dir))
     finally:
         loop.close()
